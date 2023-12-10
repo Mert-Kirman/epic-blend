@@ -32,6 +32,7 @@ public class BinaryHeap {
             }
             this.array.add(item);
             this.size++;
+            this.elementCount++;
         }
         buildHeap();
     }
