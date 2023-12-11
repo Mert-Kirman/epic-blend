@@ -9,7 +9,7 @@ public class Main {
         EpicBlend epicBlend;
         PlayList[] playListArray;  // Array to store playlist objects
 
-        FileWriter output = new FileWriter("output_add_small.txt", true);
+        FileWriter output = new FileWriter("output_add_large.txt", true);
 
         // Take song infos from the input file and create corresponding song objects via first input file
         File file = new File("songs.txt");
@@ -40,7 +40,7 @@ public class Main {
         input.close();
 
         // Create playlists, EpicBland and process requests from the user via second input file
-        file = new File("add_small.txt");
+        file = new File("add_large.txt");
         input = new Scanner(file);
 
         // Create epicBland object with the given limit infos
@@ -80,7 +80,7 @@ public class Main {
             playListArray[playListID] = playList;
         }
 
-        epicBlend = new EpicBlend(limitsInt, currentSongsArray, currentSongsArray, currentSongsArray);
+        epicBlend = new EpicBlend(limitsInt, currentSongsArray, currentSongsArray, currentSongsArray, playListArray.length);
         epicBlend.createEpicBlend(playListArray);
 
         // Process events / requests
@@ -92,13 +92,13 @@ public class Main {
             String eventType = event[0];
 
             switch (eventType) {
-                case "REM" -> {
-                    int songID = Integer.parseInt(event[1]);
-                    int playlistID = Integer.parseInt(event[2]);
-                    Song deletedSong = allSongsArray[songID];
-                    playListArray[playlistID].songsArray.remove(deletedSong);
-                    epicBlend.remove(playListArray, allSongsArray, deletedSong, output);
-                }
+//                case "REM" -> {
+//                    int songID = Integer.parseInt(event[1]);
+//                    int playlistID = Integer.parseInt(event[2]);
+//                    Song deletedSong = allSongsArray[songID];
+//                    playListArray[playlistID].songsArray.remove(deletedSong);
+//                    epicBlend.remove(playListArray, allSongsArray, deletedSong, output);
+//                }
                 case "ADD" -> {
                     int songID = Integer.parseInt(event[1]);
                     int playlistID = Integer.parseInt(event[2]);
