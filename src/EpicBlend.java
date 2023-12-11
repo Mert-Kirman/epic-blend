@@ -261,174 +261,183 @@ public class EpicBlend {
     }
 
     // Remove a selected song from its playlist, which might also impact Epic Blend
-//    public void remove(PlayList[] playListArray, Song[] allSongsArray, Song deletedSong, FileWriter output) throws IOException {
-//        // Remove the song from heartache category
-//        if(!this.inChosenHeartache.contains(deletedSong)) {  // Song to be removed is not in Epic Blend
-//            this.removedSongsGeneralHeartache.add(deletedSong);
-//            this.heartacheHeap.elementCount--;
-//        }
-//        else {  // Removed song is included in the heartache category of Epic Blend actively
-//            // Remove it
-//            this.inChosenHeartache.remove(deletedSong);
-//            playListArray[deletedSong.playlistID].heartacheOfferedCount--;
-//            this.removedSongsChosenHeartache.add(deletedSong);  // Inactivate the song in the chosen min heap
-//            this.chosenHeartacheHeap.elementCount--;
-//            this.removalsFromEpicBlend[0] = deletedSong.songID;
+    public void remove(PlayList[] playListArray, Song[] allSongsArray, Song deletedSong, FileWriter output) throws IOException {
+        // Remove the song from heartache category
+        if(!this.inChosenHeartache.contains(deletedSong)) {  // Song to be removed is not in Epic Blend
+            this.removedSongsGeneralHeartache.add(deletedSong);  // Inactivate the song in the general max heap
+            this.heartacheHeap.elementCount--;
+        }
+        else {  // Removed song is included in the heartache category of Epic Blend actively
+            // Remove it
+            this.inChosenHeartache.remove(deletedSong);
+            playListArray[deletedSong.playlistID].heartacheOfferedCount--;
+            this.removedSongsChosenHeartache.add(deletedSong);  // Inactivate the song in the chosen min heap
+            this.chosenHeartacheHeap.elementCount--;
+            this.removalsFromEpicBlend[0] = deletedSong.songID;
+
+            // Choose another song in its place if there are songs waiting in the general heap, until heartache category of Epic Blend is full
+            Queue<Song> poppedSongs = new LinkedList<>();
+            while(this.chosenHeartacheHeap.elementCount < this.heartacheLimit && this.heartacheHeap.elementCount > 0) {
+                Song newSong = this.heartacheHeap.peek();
+                while(this.removedSongsGeneralHeartache.contains(newSong)) {  // Choose a new candidate song that is not inactive(removed) from the general heap
+                    this.removedSongsGeneralHeartache.remove(newSong);
+                    this.heartacheHeap.pop();
+                    newSong = this.heartacheHeap.peek();
+                }
+                this.heartacheHeap.pop();  // Remove new active song from the general heap, it will be like a new song added by the user
+                this.heartacheHeap.elementCount--;
+
+                if(playListArray[newSong.playlistID].heartacheOfferedCount < this.categoryLimit) {  // Category limit has not been exceeded
+                    emptySlotsWithinLimit(playListArray, this.chosenHeartacheHeap, this.playlistMinheapsArrayHeartache[newSong.playlistID], newSong, "heartache", this.removedSongsChosenHeartache);
+//                    this.removalsFromEpicBlend[0] = deletedSong.songID;
+                    break;
+                }
+                else {
+                    poppedSongs.offer(newSong);
+                }
+//                else {  // Category limit is full but the candidate song may replace another song from the same playlist
+//                    Song oldSong = this.chosenHeartacheHeap.peek();
+//                    while(this.removedSongsChosenHeartache.contains(oldSong)) {
+//                        this.removedSongsChosenHeartache.remove(oldSong);
+//                        this.chosenHeartacheHeap.pop();
+//                        oldSong = this.chosenHeartacheHeap.peek();
+//                    }
+//                    boolean inserted = emptySlotsAtLimit(this.chosenHeartacheHeap, this.heartacheHeap, oldSong, newSong, "heartache", this.removedSongsChosenHeartache, this.removedSongsGeneralHeartache, true);
 //
-//            // Choose another song in its place if there are songs waiting in the general heap, until heartache category of Epic Blend is full
-//            Queue<Song> poppedSongs = new LinkedList<>();
-//            while(this.chosenHeartacheHeap.elementCount < this.heartacheLimit && this.heartacheHeap.elementCount > 0) {
-//                Song newSong = this.heartacheHeap.peek();
-//                while(this.removedSongsGeneralHeartache.contains(newSong)) {  // Choose a new candidate song that is not inactive(removed) from the general heap
-//                    this.removedSongsGeneralHeartache.remove(newSong);
-//                    this.heartacheHeap.pop();
-//                    newSong = this.heartacheHeap.peek();
+//                    if(inserted) {  // If the song inserted into chosen heap for Epic Blend
+//                        break;
+//                    }
+//                    else {  // Choose another candidate song if possible
+//                        poppedSongs.offer(this.heartacheHeap.pop());
+//                        this.heartacheHeap.elementCount--;
+//                    }
 //                }
-//                this.heartacheHeap.pop();  // Remove new active song from the general heap, it will be like a new song added by the user
-//                this.heartacheHeap.elementCount--;
+            }
+
+            // Put the popped songs back into the general heap
+            while(!poppedSongs.isEmpty()) {
+                this.heartacheHeap.insert(poppedSongs.poll());
+            }
+        }
+
+        // Remove the song from road trip category
+        if(!this.inChosenRoadTrip.contains(deletedSong)) {  // Song to be removed is not in Epic Blend
+            this.removedSongsGeneralRoadTrip.add(deletedSong);  // Inactivate the song in the general max heap
+            this.roadTripHeap.elementCount--;
+        }
+        else {  // Removed song is included in the roadTrip category of Epic Blend actively
+            // Remove it
+            this.inChosenRoadTrip.remove(deletedSong);
+            playListArray[deletedSong.playlistID].roadTripOfferedCount--;
+            this.removedSongsChosenRoadTrip.add(deletedSong);  // Inactivate the song in the chosen min heap
+            this.chosenRoadTripHeap.elementCount--;
+            this.removalsFromEpicBlend[1] = deletedSong.songID;
+
+            // Choose another song in its place if there are songs waiting in the general heap, until roadTrip category of Epic Blend is full
+            Queue<Song> poppedSongs = new LinkedList<>();
+            while(this.chosenRoadTripHeap.elementCount < this.roadTripLimit && this.roadTripHeap.elementCount > 0) {
+                Song newSong = this.roadTripHeap.peek();
+                while(this.removedSongsGeneralRoadTrip.contains(newSong)) {  // Choose a new candidate song that is not inactive(removed) from the general heap
+                    this.removedSongsGeneralRoadTrip.remove(newSong);
+                    this.roadTripHeap.pop();
+                    newSong = this.roadTripHeap.peek();
+                }
+                this.roadTripHeap.pop();  // Remove new active song from the general heap, it will be like a new song added by the user
+                this.roadTripHeap.elementCount--;
+
+                if(playListArray[newSong.playlistID].roadTripOfferedCount < this.categoryLimit) {  // Category limit has not been exceeded
+                    emptySlotsWithinLimit(playListArray, this.chosenRoadTripHeap, this.playlistMinheapsArrayRoadTrip[newSong.playlistID], newSong, "roadTrip", this.removedSongsChosenRoadTrip);
+//                    this.removalsFromEpicBlend[0] = deletedSong.songID;
+                    break;
+                }
+                else {
+                    poppedSongs.offer(newSong);
+                }
+//                else {  // Category limit is full but the candidate song may replace another song from the same playlist
+//                    Song oldSong = this.chosenRoadTripHeap.peek();
+//                    while(this.removedSongsChosenRoadTrip.contains(oldSong)) {
+//                        this.removedSongsChosenRoadTrip.remove(oldSong);
+//                        this.chosenRoadTripHeap.pop();
+//                        oldSong = this.chosenRoadTripHeap.peek();
+//                    }
+//                    boolean inserted = emptySlotsAtLimit(this.chosenRoadTripHeap, this.roadTripHeap, oldSong, newSong, "roadTrip", this.removedSongsChosenRoadTrip, this.removedSongsGeneralRoadTrip, true);
 //
-//                if(playListArray[newSong.playlistID].heartacheOfferedCount < this.categoryLimit) {  // Category limit has not been exceeded
-//                    emptySlotsWithinLimit(playListArray, this.chosenHeartacheHeap, newSong, "heartache", this.removedSongsChosenHeartache);
-////                    this.removalsFromEpicBlend[0] = deletedSong.songID;
-//                    break;
+//                    if(inserted) {  // If the song inserted into chosen heap for Epic Blend
+//                        break;
+//                    }
+//                    else {  // Choose another candidate song if possible
+//                        poppedSongs.offer(this.roadTripHeap.pop());
+//                        this.roadTripHeap.elementCount--;
+//                    }
 //                }
-////                else {  // Category limit is full but the candidate song may replace another song from the same playlist
-////                    Song oldSong = this.chosenHeartacheHeap.peek();
-////                    while(this.removedSongsChosenHeartache.contains(oldSong)) {
-////                        this.removedSongsChosenHeartache.remove(oldSong);
-////                        this.chosenHeartacheHeap.pop();
-////                        oldSong = this.chosenHeartacheHeap.peek();
-////                    }
-////                    boolean inserted = emptySlotsAtLimit(this.chosenHeartacheHeap, this.heartacheHeap, oldSong, newSong, "heartache", this.removedSongsChosenHeartache, this.removedSongsGeneralHeartache, true);
-////
-////                    if(inserted) {  // If the song inserted into chosen heap for Epic Blend
-////                        break;
-////                    }
-////                    else {  // Choose another candidate song if possible
-////                        poppedSongs.offer(this.heartacheHeap.pop());
-////                        this.heartacheHeap.elementCount--;
-////                    }
-////                }
-//            }
+            }
+
+            // Put the popped songs back into the general heap
+            while(!poppedSongs.isEmpty()) {
+                this.roadTripHeap.insert(poppedSongs.poll());
+            }
+        }
+
+        // Remove the song from blissful category
+        if(!this.inChosenBlissful.contains(deletedSong)) {  // Song to be removed is not in Epic Blend
+            this.removedSongsGeneralBlissful.add(deletedSong);  // Inactivate the song in the general max heap
+            this.blissfulHeap.elementCount--;
+        }
+        else {  // Removed song is included in the blissful category of Epic Blend actively
+            // Remove it
+            this.inChosenBlissful.remove(deletedSong);
+            playListArray[deletedSong.playlistID].blissfulOfferedCount--;
+            this.removedSongsChosenBlissful.add(deletedSong);  // Inactivate the song in the chosen min heap
+            this.chosenBlissfulHeap.elementCount--;
+            this.removalsFromEpicBlend[2] = deletedSong.songID;
+
+            // Choose another song in its place if there are songs waiting in the general heap, until blissful category of Epic Blend is full
+            Queue<Song> poppedSongs = new LinkedList<>();
+            while(this.chosenBlissfulHeap.elementCount < this.blissfulLimit && this.blissfulHeap.elementCount > 0) {
+                Song newSong = this.blissfulHeap.peek();
+                while(this.removedSongsGeneralBlissful.contains(newSong)) {  // Choose a new candidate song that is not inactive(removed) from the general heap
+                    this.removedSongsGeneralBlissful.remove(newSong);
+                    this.blissfulHeap.pop();
+                    newSong = this.blissfulHeap.peek();
+                }
+                this.blissfulHeap.pop();  // Remove new active song from the general heap, it will be like a new song added by the user
+                this.blissfulHeap.elementCount--;
+
+                if(playListArray[newSong.playlistID].blissfulOfferedCount < this.categoryLimit) {  // Category limit has not been exceeded
+                    emptySlotsWithinLimit(playListArray, this.chosenBlissfulHeap, this.playlistMinheapsArrayBlissful[newSong.playlistID], newSong, "blissful", this.removedSongsChosenBlissful);
+//                    this.removalsFromEpicBlend[0] = deletedSong.songID;
+                    break;
+                }
+                else {
+                    poppedSongs.offer(newSong);
+                }
+//                else {  // Category limit is full but the candidate song may replace another song from the same playlist
+//                    Song oldSong = this.chosenBlissfulHeap.peek();
+//                    while(this.removedSongsChosenBlissful.contains(oldSong)) {
+//                        this.removedSongsChosenBlissful.remove(oldSong);
+//                        this.chosenBlissfulHeap.pop();
+//                        oldSong = this.chosenBlissfulHeap.peek();
+//                    }
+//                    boolean inserted = emptySlotsAtLimit(this.chosenBlissfulHeap, this.blissfulHeap, oldSong, newSong, "blissful", this.removedSongsChosenBlissful, this.removedSongsGeneralBlissful, true);
 //
-//            // Put the popped songs back into the general heap
-//            while(!poppedSongs.isEmpty()) {
-//                this.heartacheHeap.insert(poppedSongs.poll());
-//            }
-//        }
-//
-//        // Remove the song from road trip category
-//        if(!this.inChosenRoadTrip.contains(deletedSong)) {  // Song to be removed is not in Epic Blend
-//            this.removedSongsGeneralRoadTrip.add(deletedSong);
-//            this.roadTripHeap.elementCount--;
-//        }
-//        else {  // Removed song is included in the roadTrip category of Epic Blend actively
-//            // Remove it
-//            this.inChosenRoadTrip.remove(deletedSong);
-//            playListArray[deletedSong.playlistID].roadTripOfferedCount--;
-//            this.removedSongsChosenRoadTrip.add(deletedSong);
-//            this.chosenRoadTripHeap.elementCount--;
-//            this.removalsFromEpicBlend[1] = deletedSong.songID;
-//
-//            // Choose another song in its place if there are songs waiting in the general heap, until roadTrip category of Epic Blend is full
-//            Queue<Song> poppedSongs = new LinkedList<>();
-//            while(this.chosenRoadTripHeap.elementCount < this.roadTripLimit && this.roadTripHeap.elementCount > 0) {
-//                Song newSong = this.roadTripHeap.peek();
-//                while(this.removedSongsGeneralRoadTrip.contains(newSong)) {  // Choose a new candidate song that is not inactive(removed) from the general heap
-//                    this.removedSongsGeneralRoadTrip.remove(newSong);
-//                    this.roadTripHeap.pop();
-//                    newSong = this.roadTripHeap.peek();
+//                    if(inserted) {  // If the song inserted into chosen heap for Epic Blend
+//                        break;
+//                    }
+//                    else {  // Choose another candidate song if possible
+//                        poppedSongs.offer(this.blissfulHeap.pop());
+//                        this.blissfulHeap.elementCount--;
+//                    }
 //                }
-//                this.roadTripHeap.pop();  // Remove new active song from the general heap, it will be like a new song added by the user
-//                this.roadTripHeap.elementCount--;
-//
-//                if(playListArray[newSong.playlistID].roadTripOfferedCount < this.categoryLimit) {  // Category limit has not been exceeded
-//                    emptySlotsWithinLimit(playListArray, this.chosenRoadTripHeap, newSong, "roadTrip", this.removedSongsChosenRoadTrip);
-////                    this.removalsFromEpicBlend[1] = deletedSong.songID;
-//                    break;
-//                }
-////                else {  // Category limit is full but the candidate song may replace another song from the same playlist
-////                    Song oldSong = this.chosenRoadTripHeap.peek();
-////                    while(this.removedSongsChosenRoadTrip.contains(oldSong)) {
-////                        this.removedSongsChosenRoadTrip.remove(oldSong);
-////                        this.chosenRoadTripHeap.pop();
-////                        oldSong = this.chosenRoadTripHeap.peek();
-////                    }
-////                    boolean inserted = emptySlotsAtLimit(this.chosenRoadTripHeap, this.roadTripHeap, oldSong, newSong, "roadTrip", this.removedSongsChosenRoadTrip, this.removedSongsGeneralRoadTrip, true);
-////
-////                    if(inserted) {  // If the song inserted into chosen heap for Epic Blend
-////                        break;
-////                    }
-////                    else {  // Choose another candidate song if possible
-////                        poppedSongs.offer(this.roadTripHeap.pop());
-////                        this.roadTripHeap.elementCount--;
-////                    }
-////                }
-//            }
-//
-//            // Put the popped songs back into the general heap
-//            while(!poppedSongs.isEmpty()) {
-//                this.roadTripHeap.insert(poppedSongs.poll());
-//            }
-//        }
-//
-//        // Remove the song from blissful category
-//        if(!this.inChosenBlissful.contains(deletedSong)) {  // Song to be removed is not in Epic Blend
-//            this.removedSongsGeneralBlissful.add(deletedSong);
-//            this.blissfulHeap.elementCount--;
-//        }
-//        else {  // Removed song is included in the blissful category of Epic Blend actively
-//            // Remove it
-//            this.inChosenBlissful.remove(deletedSong);
-//            playListArray[deletedSong.playlistID].blissfulOfferedCount--;
-//            this.removedSongsChosenBlissful.add(deletedSong);
-//            this.chosenBlissfulHeap.elementCount--;
-//            this.removalsFromEpicBlend[2] = deletedSong.songID;
-//
-//            // Choose another song in its place if there are songs waiting in the general heap, until blissful category of Epic Blend is full
-//            Queue<Song> poppedSongs = new LinkedList<>();
-//            while(this.chosenBlissfulHeap.elementCount < this.blissfulLimit && this.blissfulHeap.elementCount > 0) {
-//                Song newSong = this.blissfulHeap.peek();
-//                while(this.removedSongsGeneralBlissful.contains(newSong)) {  // Choose a new candidate song that is not inactive(removed) from the general heap
-//                    this.removedSongsGeneralBlissful.remove(newSong);
-//                    this.blissfulHeap.pop();
-//                    newSong = this.blissfulHeap.peek();
-//                }
-//                this.blissfulHeap.pop();  // Remove new active song from the general heap, it will be like a new song added by the user
-//                this.blissfulHeap.elementCount--;
-//
-//                if(playListArray[newSong.playlistID].blissfulOfferedCount < this.categoryLimit) {  // Category limit has not been exceeded
-//                    emptySlotsWithinLimit(playListArray, this.chosenBlissfulHeap, newSong, "blissful", this.removedSongsChosenBlissful);
-////                    this.removalsFromEpicBlend[2] = deletedSong.songID;
-//                    break;
-//                }
-////                else {  // Category limit is full but the candidate song may replace another song from the same playlist
-////                    Song oldSong = this.chosenBlissfulHeap.peek();
-////                    while(this.removedSongsChosenBlissful.contains(oldSong)) {
-////                        this.removedSongsChosenBlissful.remove(oldSong);
-////                        this.chosenBlissfulHeap.pop();
-////                        oldSong = this.chosenBlissfulHeap.peek();
-////                    }
-////                    boolean inserted = emptySlotsAtLimit(this.chosenBlissfulHeap, this.blissfulHeap, oldSong, newSong, "blissful", this.removedSongsChosenBlissful, this.removedSongsGeneralBlissful, true);
-////
-////                    if(inserted) {  // If the song inserted into chosen heap for Epic Blend
-////                        break;
-////                    }
-////                    else {  // Choose another candidate song if possible
-////                        poppedSongs.offer(this.blissfulHeap.pop());
-////                        this.blissfulHeap.elementCount--;
-////                    }
-////                }
-//            }
-//
-//            // Put the popped songs back into the general heap
-//            while(!poppedSongs.isEmpty()) {
-//                this.blissfulHeap.insert(poppedSongs.poll());
-//            }
-//        }
-//
-//        updateHashsetsAndPrint(allSongsArray, output);
-//    }
+            }
+
+            // Put the popped songs back into the general heap
+            while(!poppedSongs.isEmpty()) {
+                this.blissfulHeap.insert(poppedSongs.poll());
+            }
+        }
+
+        updateHashsetsAndPrint(allSongsArray, output);
+    }
 
     // There are empty spots in the Epic Blend and category limit has not been exceeded for this song's playlist
     private void emptySlotsWithinLimit(PlayList[] playListArray, BinaryHeap chosenHeap, BinaryHeap playlistChosenMinHeap, Song newSong, String heapType, HashSet<Song> removedSongsChosen) {
@@ -879,24 +888,15 @@ public class EpicBlend {
         Song[] songsCombinedFinal;  // Combination of songs from 3 categories without null elements
 
         // Traverse all songs from the 3 chosen min heaps and combine them via inserting them into an array using songID as index
-        for(Song song:this.chosenHeartacheHeap.array) {
-            if(song == null) {
-                continue;
-            }
+        for(Song song:this.inChosenHeartache) {
             songsCombined.add(song);
         }
 
-        for(Song song:this.chosenRoadTripHeap.array) {
-            if(song == null) {
-                continue;
-            }
+        for(Song song:this.inChosenRoadTrip) {
             songsCombined.add(song);
         }
 
-        for(Song song:this.chosenBlissfulHeap.array) {
-            if(song == null) {
-                continue;
-            }
+        for(Song song:this.inChosenBlissful) {
             songsCombined.add(song);
         }
 
