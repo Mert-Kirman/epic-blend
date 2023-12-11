@@ -243,6 +243,7 @@ public class EpicBlend {
             playListArray[deletedSong.playlistID].heartacheOfferedCount--;
             this.removedSongsChosenHeartache.add(deletedSong);
             this.chosenHeartacheHeap.elementCount--;
+            this.removalsFromEpicBlend[0] = deletedSong.songID;
 
             // Choose another song in its place if there are songs waiting in the general heap, until heartache category of Epic Blend is full
             Queue<Song> poppedSongs = new LinkedList<>();
@@ -258,7 +259,7 @@ public class EpicBlend {
 
                 if(playListArray[newSong.playlistID].heartacheOfferedCount < this.categoryLimit) {  // Category limit has not been exceeded
                     emptySlotsWithinLimit(playListArray, this.chosenHeartacheHeap, newSong, "heartache", this.removedSongsChosenHeartache);
-                    this.removalsFromEpicBlend[0] = deletedSong.songID;
+//                    this.removalsFromEpicBlend[0] = deletedSong.songID;
                     break;
                 }
                 else {  // Category limit is full but the candidate song may replace another song from the same playlist
@@ -297,6 +298,7 @@ public class EpicBlend {
             playListArray[deletedSong.playlistID].roadTripOfferedCount--;
             this.removedSongsChosenRoadTrip.add(deletedSong);
             this.chosenRoadTripHeap.elementCount--;
+            this.removalsFromEpicBlend[1] = deletedSong.songID;
 
             // Choose another song in its place if there are songs waiting in the general heap, until roadTrip category of Epic Blend is full
             Queue<Song> poppedSongs = new LinkedList<>();
@@ -312,7 +314,7 @@ public class EpicBlend {
 
                 if(playListArray[newSong.playlistID].roadTripOfferedCount < this.categoryLimit) {  // Category limit has not been exceeded
                     emptySlotsWithinLimit(playListArray, this.chosenRoadTripHeap, newSong, "roadTrip", this.removedSongsChosenRoadTrip);
-                    this.removalsFromEpicBlend[0] = deletedSong.songID;
+//                    this.removalsFromEpicBlend[1] = deletedSong.songID;
                     break;
                 }
                 else {  // Category limit is full but the candidate song may replace another song from the same playlist
@@ -351,6 +353,7 @@ public class EpicBlend {
             playListArray[deletedSong.playlistID].blissfulOfferedCount--;
             this.removedSongsChosenBlissful.add(deletedSong);
             this.chosenBlissfulHeap.elementCount--;
+            this.removalsFromEpicBlend[2] = deletedSong.songID;
 
             // Choose another song in its place if there are songs waiting in the general heap, until blissful category of Epic Blend is full
             Queue<Song> poppedSongs = new LinkedList<>();
@@ -366,7 +369,7 @@ public class EpicBlend {
 
                 if(playListArray[newSong.playlistID].blissfulOfferedCount < this.categoryLimit) {  // Category limit has not been exceeded
                     emptySlotsWithinLimit(playListArray, this.chosenBlissfulHeap, newSong, "blissful", this.removedSongsChosenBlissful);
-                    this.removalsFromEpicBlend[0] = deletedSong.songID;
+//                    this.removalsFromEpicBlend[2] = deletedSong.songID;
                     break;
                 }
                 else {  // Category limit is full but the candidate song may replace another song from the same playlist
