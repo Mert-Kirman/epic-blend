@@ -70,7 +70,7 @@ public class BinaryHeap {
         this.array.add(item);
 
         if(this.isMaxHeap) {
-            while(hole > 1 && item.compare(this.array.get(hole/2), this.sortBy, true) > 0) {
+            while(hole > 1 && item.compare(this.array.get(hole/2), this.sortBy) > 0) {
                 Song parent = this.array.get(hole/2);
                 this.array.set(hole, parent);
                 this.array.set(hole/2, item);
@@ -78,7 +78,7 @@ public class BinaryHeap {
             }
         }
         else {
-            while(hole > 1 && item.compare(this.array.get(hole/2), this.sortBy, false) < 0) {
+            while(hole > 1 && item.compare(this.array.get(hole/2), this.sortBy) < 0) {
                 Song parent = this.array.get(hole/2);
                 this.array.set(hole, parent);
                 this.array.set(hole/2, item);
@@ -104,11 +104,11 @@ public class BinaryHeap {
             child = hole * 2;
 
             if(this.isMaxHeap) {  // Max heap case
-                // If right child is greater than the left child, move there
-                if(child != this.size && this.array.get(child + 1).compare(this.array.get(child), this.sortBy, true) > 0) {
+                // If right child is greater than the left child or has a lexicographical advantage, move there
+                if(child != this.size && this.array.get(child + 1).compare(this.array.get(child), this.sortBy) > 0) {
                     child++;
                 }
-                if(this.array.get(child).compare(tmp, this.sortBy, true) > 0) {
+                if(this.array.get(child).compare(tmp, this.sortBy) > 0) {
                     this.array.set(hole, this.array.get(child));
                 }
                 else {
@@ -117,10 +117,10 @@ public class BinaryHeap {
             }
             else {  // Min heap case
                 // If right child is less than the left child
-                if(child != this.size && this.array.get(child + 1).compare(this.array.get(child), this.sortBy, false) < 0) {
+                if(child != this.size && this.array.get(child + 1).compare(this.array.get(child), this.sortBy) < 0) {
                     child++;
                 }
-                if(this.array.get(child).compare(tmp, this.sortBy, false) < 0) {
+                if(this.array.get(child).compare(tmp, this.sortBy) < 0) {
                     this.array.set(hole, this.array.get(child));
                 }
                 else {

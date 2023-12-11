@@ -269,7 +269,7 @@ public class EpicBlend {
                         this.chosenHeartacheHeap.pop();
                         oldSong = this.chosenHeartacheHeap.peek();
                     }
-                    boolean inserted = emptySlotsAtLimit(this.chosenHeartacheHeap, this.heartacheHeap, oldSong, newSong, "heartache", this.removedSongsChosenHeartache, this.removedSongsGeneralHeartache);
+                    boolean inserted = emptySlotsAtLimit(this.chosenHeartacheHeap, this.heartacheHeap, oldSong, newSong, "heartache", this.removedSongsChosenHeartache, this.removedSongsGeneralHeartache, true);
 
                     if(inserted) {  // If the song inserted into chosen heap for Epic Blend
                         break;
@@ -324,7 +324,7 @@ public class EpicBlend {
                         this.chosenRoadTripHeap.pop();
                         oldSong = this.chosenRoadTripHeap.peek();
                     }
-                    boolean inserted = emptySlotsAtLimit(this.chosenRoadTripHeap, this.roadTripHeap, oldSong, newSong, "roadTrip", this.removedSongsChosenRoadTrip, this.removedSongsGeneralRoadTrip);
+                    boolean inserted = emptySlotsAtLimit(this.chosenRoadTripHeap, this.roadTripHeap, oldSong, newSong, "roadTrip", this.removedSongsChosenRoadTrip, this.removedSongsGeneralRoadTrip, true);
 
                     if(inserted) {  // If the song inserted into chosen heap for Epic Blend
                         break;
@@ -379,7 +379,7 @@ public class EpicBlend {
                         this.chosenBlissfulHeap.pop();
                         oldSong = this.chosenBlissfulHeap.peek();
                     }
-                    boolean inserted = emptySlotsAtLimit(this.chosenBlissfulHeap, this.blissfulHeap, oldSong, newSong, "blissful", this.removedSongsChosenBlissful, this.removedSongsGeneralBlissful);
+                    boolean inserted = emptySlotsAtLimit(this.chosenBlissfulHeap, this.blissfulHeap, oldSong, newSong, "blissful", this.removedSongsChosenBlissful, this.removedSongsGeneralBlissful, true);
 
                     if(inserted) {  // If the song inserted into chosen heap for Epic Blend
                         break;
@@ -428,8 +428,8 @@ public class EpicBlend {
 
     //  There are empty spots in the Epic Blend however new song's playlist's offer count is at the category limit, but
     // it may replace another song which is in the same playlist as itself
-    private boolean emptySlotsAtLimit(BinaryHeap chosenHeap, BinaryHeap generalHeap, Song oldSong, Song newSong, String heapType, HashSet<Song> removedSongsChosen, HashSet<Song> removedSongsGeneral) {
-        return noEmptySlotsDifferentPlaylistAtLimit(chosenHeap, generalHeap, oldSong, newSong, heapType, removedSongsChosen, removedSongsGeneral);
+    private boolean emptySlotsAtLimit(BinaryHeap chosenHeap, BinaryHeap generalHeap, Song oldSong, Song newSong, String heapType, HashSet<Song> removedSongsChosen, HashSet<Song> removedSongsGeneral, boolean comingFromRemoveMethod) {
+        return noEmptySlotsDifferentPlaylistAtLimit(chosenHeap, generalHeap, oldSong, newSong, heapType, removedSongsChosen, removedSongsGeneral, comingFromRemoveMethod);
     }
 
     //  Epic Blend is full however new song is in the same playlist as the min scored song in Epic Blend and replaces it
@@ -500,7 +500,7 @@ public class EpicBlend {
 
     // Epic Blend is full however new song has a chance to enter Epic Blend based on its score and is in a different playlist from the min scored song in Epic Blend
     // New song's playlist's offer count is at the category limit, but it may replace another song which is in the same playlist as itself
-    private boolean noEmptySlotsDifferentPlaylistAtLimit(BinaryHeap chosenHeap, BinaryHeap generalHeap, Song oldSong, Song newSong, String heapType, HashSet<Song> removedSongsChosen, HashSet<Song> removedSongsGeneral) {
+    private boolean noEmptySlotsDifferentPlaylistAtLimit(BinaryHeap chosenHeap, BinaryHeap generalHeap, Song oldSong, Song newSong, String heapType, HashSet<Song> removedSongsChosen, HashSet<Song> removedSongsGeneral, boolean comingFromRemoveMethod) {
         Queue<Song> poppedSongs = new LinkedList<>();  // Temporary queue for keeping popped songs while doing a search
         // Search for the minimum scored song in the chosen heartache / road trip / blissful heap that is from the same playlist as the new song
         while(!oldSong.playlistID.equals(newSong.playlistID) || removedSongsChosen.contains(oldSong)) {
@@ -549,15 +549,21 @@ public class EpicBlend {
             switch (heapType) {
                 case "heartache" -> {
                     this.additionsToEpicBlend[0] = newSong.songID;
-                    this.removalsFromEpicBlend[0] = oldSong.songID;
+                    if(!comingFromRemoveMethod) {  // For remove method this is already done before
+                        this.removalsFromEpicBlend[0] = oldSong.songID;
+                    }
                 }
                 case "roadTrip" -> {
                     this.additionsToEpicBlend[1] = newSong.songID;
-                    this.removalsFromEpicBlend[1] = oldSong.songID;
+                    if(!comingFromRemoveMethod) {
+                        this.removalsFromEpicBlend[1] = oldSong.songID;
+                    }
                 }
                 case "blissful" -> {
                     this.additionsToEpicBlend[2] = newSong.songID;
-                    this.removalsFromEpicBlend[2] = oldSong.songID;
+                    if(!comingFromRemoveMethod) {
+                        this.removalsFromEpicBlend[2] = oldSong.songID;
+                    }
                 }
             }
 
@@ -598,7 +604,7 @@ public class EpicBlend {
                     this.chosenHeartacheHeap.pop();
                     oldSong = this.chosenHeartacheHeap.peek();
                 }
-                emptySlotsAtLimit(this.chosenHeartacheHeap, this.heartacheHeap, oldSong, newSong, "heartache", this.removedSongsChosenHeartache, this.removedSongsGeneralHeartache);
+                emptySlotsAtLimit(this.chosenHeartacheHeap, this.heartacheHeap, oldSong, newSong, "heartache", this.removedSongsChosenHeartache, this.removedSongsGeneralHeartache, false);
             }
         }
         else { // Chosen Heartache Heap is full, only replacements can be done
@@ -618,7 +624,7 @@ public class EpicBlend {
                         noEmptySlotsDifferentPlaylistWithinLimit(playListArray, this.chosenHeartacheHeap, this.heartacheHeap, oldSong, newSong, "heartache", this.removedSongsChosenHeartache);
                     }
                     else {  // New song's playlist exceeds the offer limit for this category, but it may replace another song which is in the same playlist as itself
-                        noEmptySlotsDifferentPlaylistAtLimit(this.chosenHeartacheHeap, this.heartacheHeap, oldSong, newSong, "heartache", this.removedSongsChosenHeartache, this.removedSongsGeneralHeartache);
+                        noEmptySlotsDifferentPlaylistAtLimit(this.chosenHeartacheHeap, this.heartacheHeap, oldSong, newSong, "heartache", this.removedSongsChosenHeartache, this.removedSongsGeneralHeartache, false);
                     }
                 }
             }
@@ -645,7 +651,7 @@ public class EpicBlend {
                     this.chosenRoadTripHeap.pop();
                     oldSong = this.chosenRoadTripHeap.peek();
                 }
-                emptySlotsAtLimit(this.chosenRoadTripHeap, this.roadTripHeap, oldSong, newSong, "roadTrip", this.removedSongsChosenRoadTrip, this.removedSongsGeneralRoadTrip);
+                emptySlotsAtLimit(this.chosenRoadTripHeap, this.roadTripHeap, oldSong, newSong, "roadTrip", this.removedSongsChosenRoadTrip, this.removedSongsGeneralRoadTrip, false);
             }
         }
         else { // Chosen RoadTrip Heap is full, only replacements can be done
@@ -665,7 +671,7 @@ public class EpicBlend {
                         noEmptySlotsDifferentPlaylistWithinLimit(playListArray, this.chosenRoadTripHeap, this.roadTripHeap, oldSong, newSong, "roadTrip", this.removedSongsChosenRoadTrip);
                     }
                     else {  // New song's playlist exceeds the offer limit for this category, but it may replace another song which is in the same playlist as itself
-                        noEmptySlotsDifferentPlaylistAtLimit(this.chosenRoadTripHeap, this.roadTripHeap, oldSong, newSong, "roadTrip", this.removedSongsChosenRoadTrip, this.removedSongsGeneralRoadTrip);
+                        noEmptySlotsDifferentPlaylistAtLimit(this.chosenRoadTripHeap, this.roadTripHeap, oldSong, newSong, "roadTrip", this.removedSongsChosenRoadTrip, this.removedSongsGeneralRoadTrip, false);
                     }
                 }
             }
@@ -692,7 +698,7 @@ public class EpicBlend {
                     this.chosenBlissfulHeap.pop();
                     oldSong = this.chosenBlissfulHeap.peek();
                 }
-                emptySlotsAtLimit(this.chosenBlissfulHeap, this.blissfulHeap, oldSong, newSong, "blissful", this.removedSongsChosenBlissful, this.removedSongsGeneralBlissful);
+                emptySlotsAtLimit(this.chosenBlissfulHeap, this.blissfulHeap, oldSong, newSong, "blissful", this.removedSongsChosenBlissful, this.removedSongsGeneralBlissful, false);
             }
         }
         else { // Chosen Blissful Heap is full, only replacements can be done
@@ -712,7 +718,7 @@ public class EpicBlend {
                         noEmptySlotsDifferentPlaylistWithinLimit(playListArray, this.chosenBlissfulHeap, this.blissfulHeap, oldSong, newSong, "blissful", this.removedSongsChosenBlissful);
                     }
                     else {  // New song's playlist exceeds the offer limit for this category, but it may replace another song which is in the same playlist as itself
-                        noEmptySlotsDifferentPlaylistAtLimit(this.chosenBlissfulHeap, this.blissfulHeap, oldSong, newSong, "blissful", this.removedSongsChosenBlissful, this.removedSongsGeneralBlissful);
+                        noEmptySlotsDifferentPlaylistAtLimit(this.chosenBlissfulHeap, this.blissfulHeap, oldSong, newSong, "blissful", this.removedSongsChosenBlissful, this.removedSongsGeneralBlissful, false);
                     }
                 }
             }

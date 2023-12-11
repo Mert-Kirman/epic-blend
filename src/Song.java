@@ -19,63 +19,38 @@ public class Song {
     }
 
     // Method that compares two song objects according to a specified criteria
-    public int compare(Song song2, String sortBy, boolean maxHeap) {
+    public int compare(Song song2, String sortBy) {
         switch (sortBy) {
             case "heartache" -> {
                 if (this.heartacheScore.compareTo(song2.heartacheScore) != 0) {
                     return this.heartacheScore - song2.heartacheScore;
                 } else {  // Compare Lexicographically
-                    if(maxHeap) {
-                        return song2.songName.compareTo(this.songName);
-                    }
-                    else {
-                        return this.songName.compareTo(song2.songName);
-                    }
+                    return song2.songName.compareTo(this.songName);
                 }
             }
             case "roadTrip" -> {
                 if (this.roadTripScore.compareTo(song2.roadTripScore) != 0) {
                     return this.roadTripScore - song2.roadTripScore;
                 } else {  // Compare Lexicographically
-                    if(maxHeap) {
-                        return song2.songName.compareTo(this.songName);
-                    }
-                    else {
-                        return this.songName.compareTo(song2.songName);
-                    }
+                    return song2.songName.compareTo(this.songName);
                 }
             }
             case "blissful" -> {
                 if (this.blissfulScore.compareTo(song2.blissfulScore) != 0) {
                     return this.blissfulScore - song2.blissfulScore;
                 } else {  // Compare Lexicographically
-                    if(maxHeap) {
-                        return song2.songName.compareTo(this.songName);
-                    }
-                    else {
-                        return this.songName.compareTo(song2.songName);
-                    }
+                    return song2.songName.compareTo(this.songName);
                 }
             }
             case "playCount" -> {
                 if (this.playCount.compareTo(song2.playCount) != 0) {
                     return this.playCount - song2.playCount;
                 } else {  // Compare Lexicographically
-                    if(maxHeap) {
-                        return song2.songName.compareTo(this.songName);
-                    }
-                    else {
-                        return this.songName.compareTo(song2.songName);
-                    }
+                    return song2.songName.compareTo(this.songName);
                 }
             }
             case "name" -> {  // Compare Lexicographically
-                if(maxHeap) {
-                    return song2.songName.compareTo(this.songName);
-                }
-                else {
-                    return this.songName.compareTo(song2.songName);
-                }
+                return song2.songName.compareTo(this.songName);
             }
         }
         return 0;

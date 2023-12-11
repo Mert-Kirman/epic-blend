@@ -9,7 +9,7 @@ public class Main {
         EpicBlend epicBlend;
         PlayList[] playListArray;  // Array to store playlist objects
 
-        FileWriter output = new FileWriter("output1.txt", true);
+        FileWriter output = new FileWriter("output_add_small.txt", true);
 
         // Take song infos from the input file and create corresponding song objects via first input file
         File file = new File("songs.txt");
@@ -40,7 +40,7 @@ public class Main {
         input.close();
 
         // Create playlists, EpicBland and process requests from the user via second input file
-        file = new File("sample_1.txt");
+        file = new File("add_small.txt");
         input = new Scanner(file);
 
         // Create epicBland object with the given limit infos
