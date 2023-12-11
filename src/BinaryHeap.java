@@ -6,7 +6,7 @@ public class BinaryHeap {
     public ArrayList<Song> array;
     private final boolean isMaxHeap;  // Boolean value denoting whether the binary heap is max or min heap
     private final String sortBy;  // Value of the song object to sort by (name, playCount, heartache, roadTrip, blissful)
-    public int elementCount;  // Decreases immediately when a song is removed via remove function in EpicBland class
+    public int elementCount;  // Decreases immediately when a song is removed via remove function in EpicBlend class
 
     BinaryHeap() {
         this(true, "name");
@@ -55,10 +55,10 @@ public class BinaryHeap {
     public Song pop() {
         Song topItem = peek();
         Song lastItem = this.array.get(this.size);
-        this.array.remove(this.size);  // Remove the last item from the max heap
         this.array.set(1, lastItem);  // Place the last item in the heap to the top
-        this.size--;
         percolateDown(1);
+        this.array.remove(this.size);  // Remove the last item from the max heap
+        this.size--;
 
         return topItem;
     }

@@ -40,7 +40,7 @@ public class Main {
         input.close();
 
         // Create playlists, EpicBland and process requests from the user via second input file
-        file = new File("sample_0.txt");
+        file = new File("sample_1.txt");
         input = new Scanner(file);
 
         // Create epicBland object with the given limit infos
@@ -56,9 +56,7 @@ public class Main {
         playListArray = new PlayList[playlistCount + 1];
         playListArray[0] = null;
 
-        Song[] heartacheArray = new Song[allSongsArray.length];
-        Song[] roadTripArray = new Song[allSongsArray.length];
-        Song[] blissfulArray = new Song[allSongsArray.length];
+        Song[] currentSongsArray = new Song[allSongsArray.length];
         int index = 0;
 
         for(int i=0; i<playlistCount; i++) {
@@ -74,9 +72,7 @@ public class Main {
 
                 playList.songsArray.add(song);
 
-                heartacheArray[index] = song;
-                roadTripArray[index] = song;
-                blissfulArray[index] = song;
+                currentSongsArray[index] = song;
                 index++;
             }
             input.nextLine();
@@ -84,7 +80,7 @@ public class Main {
             playListArray[playListID] = playList;
         }
 
-        epicBlend = new EpicBlend(limitsInt, heartacheArray, roadTripArray, blissfulArray);
+        epicBlend = new EpicBlend(limitsInt, currentSongsArray, currentSongsArray, currentSongsArray);
         epicBlend.createEpicBlend(playListArray);
 
         // Process events / requests
@@ -107,6 +103,7 @@ public class Main {
                     int songID = Integer.parseInt(event[1]);
                     int playlistID = Integer.parseInt(event[2]);
                     Song newSong = allSongsArray[songID];
+                    newSong.playlistID = playlistID;
                     playListArray[playlistID].songsArray.add(newSong);
                     epicBlend.add(playListArray, allSongsArray, newSong, output);
                 }
