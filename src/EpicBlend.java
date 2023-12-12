@@ -643,7 +643,7 @@ public class EpicBlend {
             }
             else {  // Category limit is full but new song may replace another song from the same playlist
                 Song oldSong = this.playlistMinheapsArrayHeartache[newSong.playlistID].peek();
-                while(this.removedSongsChosenHeartache.contains(oldSong)) {
+                while(this.removedSongsChosenHeartache.contains(oldSong) || !oldSong.playlistID.equals(newSong.playlistID)) {
                     this.playlistMinheapsArrayHeartache[newSong.playlistID].pop();
                     oldSong = this.playlistMinheapsArrayHeartache[newSong.playlistID].peek();
                 }
@@ -697,7 +697,7 @@ public class EpicBlend {
                     else {  // New song's playlist exceeds the offer limit for this category, but it may replace another song which is in the same playlist as itself
 
                         oldSong = this.playlistMinheapsArrayHeartache[newSong.playlistID].peek();
-                        while(this.removedSongsChosenHeartache.contains(oldSong)) {
+                        while(this.removedSongsChosenHeartache.contains(oldSong) || !oldSong.playlistID.equals(newSong.playlistID)) {
                             this.playlistMinheapsArrayHeartache[newSong.playlistID].pop();
                             oldSong = this.playlistMinheapsArrayHeartache[newSong.playlistID].peek();
                         }
@@ -724,7 +724,7 @@ public class EpicBlend {
             }
             else {  // Category limit is full but new song may replace another song from the same playlist
                 Song oldSong = this.playlistMinheapsArrayRoadTrip[newSong.playlistID].peek();
-                while(this.removedSongsChosenRoadTrip.contains(oldSong)) {
+                while(this.removedSongsChosenRoadTrip.contains(oldSong) || !oldSong.playlistID.equals(newSong.playlistID)) {
                     this.playlistMinheapsArrayRoadTrip[newSong.playlistID].pop();
                     oldSong = this.playlistMinheapsArrayRoadTrip[newSong.playlistID].peek();
                 }
@@ -778,7 +778,7 @@ public class EpicBlend {
                     else {  // New song's playlist exceeds the offer limit for this category, but it may replace another song which is in the same playlist as itself
 
                         oldSong = this.playlistMinheapsArrayRoadTrip[newSong.playlistID].peek();
-                        while(this.removedSongsChosenRoadTrip.contains(oldSong)) {
+                        while(this.removedSongsChosenRoadTrip.contains(oldSong) || !oldSong.playlistID.equals(newSong.playlistID)) {
                             this.playlistMinheapsArrayRoadTrip[newSong.playlistID].pop();
                             oldSong = this.playlistMinheapsArrayRoadTrip[newSong.playlistID].peek();
                         }
@@ -804,11 +804,17 @@ public class EpicBlend {
                 emptySlotsWithinLimit(playListArray, this.chosenBlissfulHeap, this.playlistMinheapsArrayBlissful[newSong.playlistID], newSong, "blissful", this.removedSongsChosenBlissful);
             }
             else {  // Category limit is full but new song may replace another song from the same playlist
+//                if(newSong.songID==36) {
+//                    System.out.println("hey2");
+//                }
                 Song oldSong = this.playlistMinheapsArrayBlissful[newSong.playlistID].peek();
-                while(this.removedSongsChosenBlissful.contains(oldSong)) {
+                while(this.removedSongsChosenBlissful.contains(oldSong) || !oldSong.playlistID.equals(newSong.playlistID)) {
                     this.playlistMinheapsArrayBlissful[newSong.playlistID].pop();
                     oldSong = this.playlistMinheapsArrayBlissful[newSong.playlistID].peek();
                 }
+//                if(newSong.songID==36) {
+//                    System.out.println(oldSong.songID);
+//                }
 //                Song oldSong = this.chosenBlissfulHeap.peek();
 //                while(this.removedSongsChosenBlissful.contains(oldSong)) {
 //                    this.removedSongsChosenBlissful.remove(oldSong);
@@ -859,7 +865,7 @@ public class EpicBlend {
                     else {  // New song's playlist exceeds the offer limit for this category, but it may replace another song which is in the same playlist as itself
 
                         oldSong = this.playlistMinheapsArrayBlissful[newSong.playlistID].peek();
-                        while(this.removedSongsChosenBlissful.contains(oldSong)) {
+                        while(this.removedSongsChosenBlissful.contains(oldSong) || !oldSong.playlistID.equals(newSong.playlistID)) {
                             this.playlistMinheapsArrayBlissful[newSong.playlistID].pop();
                             oldSong = this.playlistMinheapsArrayBlissful[newSong.playlistID].peek();
                         }
